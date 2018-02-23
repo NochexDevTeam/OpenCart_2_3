@@ -3,7 +3,7 @@ Nochex Module for Open Cart
 
 Installation
 ============
-To Install and Setup the Nochex module please follow our integration guide, which can be found here: https://support.nochex.com/kb/faq.php?id=146
+To Install and Setup the Nochex module please follow our integration guide, which can be found <a href="https://support.nochex.com/kb/faq.php?id=146">here</a> 
 
 Support
 =====================
