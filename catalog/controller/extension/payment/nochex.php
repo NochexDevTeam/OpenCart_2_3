@@ -184,53 +184,27 @@ class ControllerExtensionPaymentNochex extends Controller {
 		foreach ($this->request->post as $key => $value) {
 			$request .= '&' . $key . '=' . urlencode(stripslashes($value));
 		}
-
-		/*$curl = curl_init('https://www.nochex.com/nochex.dll/apc/apc');
-
-		curl_setopt($curl, CURLOPT_POST, true);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, trim($request, '&'));
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_HEADER, false);
-		curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-		$response = curl_exec($curl);
-
-		curl_close($curl);
-
-		if (strcmp($response, 'AUTHORISED') == 0) {
-			$this->model_checkout_order->addOrderHistory($order_id, $this->config->get('nochex_order_status_id'));
-		} else {
-			$this->model_checkout_order->addOrderHistory($order_id, $this->config->get('config_order_status_id'), 'Auto-Verification step failed. Manually check the transaction.');
-		}
-
-		// Since it returned, the customer should see success.
-		// It's up to the store owner to manually verify payment.
-		$this->response->redirect($this->url->link('checkout/success', '', true));*/
 		
-		if($this->request->post['optional_1'] == "Enabled"){
+		if(isset($this->request->post['optional_1']) == "Enabled"){
 
+		$url = "https://secure.nochex.com/callback/callback.aspx";
+		$ch = curl_init();
+		curl_setopt ($ch, CURLOPT_URL, $url);
+		curl_setopt ($ch, CURLOPT_POST, true);
+		curl_setopt ($ch, CURLOPT_POSTFIELDS, $request);
+		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		$response = curl_exec($ch);
+		curl_close($ch);
 
-$url = "https://secure.nochex.com/callback/callback.aspx";
-$ch = curl_init ();
-curl_setopt ($ch, CURLOPT_URL, $url);
-curl_setopt ($ch, CURLOPT_POST, true);
-curl_setopt ($ch, CURLOPT_POSTFIELDS, $request);
-curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, 0);
-$response = curl_exec($ch);
-curl_close($ch);
-
-if($_POST["transaction_status"] == "100"){
-$testStatus = "Test";
-}else{
-$testStatus = "Live";
-}
+		if($_POST["transaction_status"] == "100"){
+		$testStatus = "Test";
+		}else{
+		$testStatus = "Live";
+		}
 		
 		if ($response=="AUTHORISED") {
-			/*$Msg = "Callback was " . $response. ", and this was a " . $testStatus . " transaction. <br/> The transaction id for this payment is: ".$_POST["transaction_id"];
-			$this->model_checkout_order->addOrderHistory($order_id, $this->config->get('nochex_order_status_id'), $Msg, false);*/
 			
 			$Msg = "<ul style=\"list-style:none;\"><li>Callback: " . $response . "</li>";			
 			$Msg .= "<li>Transaction Status: " . $testStatus . "</li>";			
@@ -259,22 +233,21 @@ $testStatus = "Live";
 
 }else{
 	
-$url = "https://www.nochex.com/apcnet/apc.aspx";
+		$url = "https://www.nochex.com/apcnet/apc.aspx";
 
-// Curl code to post variables back
-$ch = curl_init(); // Initialise the curl tranfer
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_VERBOSE, true);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, trim($request, '&')); // Set POST fields
-curl_setopt($ch, CURLOPT_HTTPHEADER, "Host: www.nochex.com");
-curl_setopt($ch, CURLOPT_POSTFIELDSIZE, 0); 
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-curl_setopt($ch, CURLOPT_TIMEOUT, 60); // set connection time out variable - 60 seconds	
-$output = curl_exec($ch); // Post back
-curl_close($ch);
+		// Curl code to post variables back
+		$ch = curl_init(); // Initialise the curl tranfer
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_VERBOSE, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, trim($request, '&')); // Set POST fields
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 60); // set connection time out variable - 60 seconds	
+		//curl_setopt ($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1); // set openSSL version variable to CURL_SSLVERSION_TLSv1
+		$output = curl_exec($ch); // Post back
+		curl_close($ch);
 
 		if (strcmp($output, 'AUTHORISED') == 0) {
 		$Msg = "APC was " . $output. ", and this was a " . $_POST['status'] . " transaction.";
