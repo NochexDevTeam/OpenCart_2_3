@@ -64,8 +64,8 @@ class ControllerExtensionPaymentNochex extends Controller {
 		}
 		
 		if($this->config->get('nochex_postage') == 1){
-		$data['postage'] = $this->currency->format($this->session->data['shipping_method']['cost'], $this->currency->getCode(), false, false);
-		$data['amount']  = $this->currency->format($order_info['total'], $currency, FALSE, FALSE) - $this->currency->format($this->session->data['shipping_method']['cost'], $this->currency->getCode(), false, false);
+		$data['postage'] = $this->currency->format($this->session->data['shipping_method']['cost'], 'GBP', false, false);
+		$data['amount']  = $this->currency->format($order_info['total'], 'GBP', FALSE, FALSE) - $this->currency->format($this->session->data['shipping_method']['cost'], 'GBP', false, false);
 		}else{
 		$data['postage'] =  "";
 		$data['amount'] = $this->currency->format($order_info['total'], 'GBP', false, false);
@@ -78,14 +78,8 @@ class ControllerExtensionPaymentNochex extends Controller {
 		
 		}
 		
-		
-	
-		//$data['amount'] = $this->currency->format($order_info['total'], 'GBP', false, false);
 		$data['order_id'] = $this->session->data['order_id'];
-		//$data['description'] = $this->config->get('config_name');
 		$data['description'] = $description;
-		
-
 		$data['billing_fullname'] = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
 
 		if ($order_info['payment_address_2']) {
@@ -95,6 +89,7 @@ class ControllerExtensionPaymentNochex extends Controller {
 		}
 		
 		$data['billing_city'] = $order_info['payment_city'];
+		$data['billing_country'] = $order_info['payment_iso_code_2'];
 		$data['billing_postcode'] = $order_info['payment_postcode'];
 
 		if ($this->cart->hasShipping()) {
@@ -106,6 +101,7 @@ class ControllerExtensionPaymentNochex extends Controller {
 				$data['delivery_address'] = $order_info['shipping_address_1'];
 			}
 			$data['delivery_city'] = $order_info['shipping_city'];
+			$data['delivery_country'] = $order_info['shipping_iso_code_2'];
 			$data['delivery_postcode'] = $order_info['shipping_postcode'];
 		} else {
 			$data['delivery_fullname'] = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
@@ -116,6 +112,7 @@ class ControllerExtensionPaymentNochex extends Controller {
 				$data['delivery_address'] = $order_info['shipping_address_1'];
 			}
 			$data['delivery_city'] = $order_info['payment_city'];
+			$data['delivery_country'] = $order_info['payment_iso_code_2'];
 			$data['delivery_postcode'] = $order_info['payment_postcode'];
 		}
 		
@@ -123,7 +120,7 @@ class ControllerExtensionPaymentNochex extends Controller {
 		$data['xmlcollection'] = $xmlCollection;
 		
 		$data['email_address'] = $order_info['email'];
-		$data['customer_phone_number']= $order_info['telephone'];
+		$data['customer_phone_number']= str_replace("+", "", $order_info['telephone']);
 		$data['test'] = $this->config->get('nochex_test');
 		$data['success_url'] = $this->url->link('checkout/success', '', true);
 		$data['cancel_url'] = $this->url->link('checkout/checkout', '', true);
