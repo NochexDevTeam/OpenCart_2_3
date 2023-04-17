@@ -13,6 +13,11 @@ Visit our Knowledgebase for support: https://support.nochex.com/
 Changelog
 =====================
 
+= 1.3 =
+
+  *Update
+  - Small change to APC page
+  
 = 1.2 =
 
   *Update
